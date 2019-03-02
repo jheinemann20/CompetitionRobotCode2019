@@ -5,8 +5,6 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-// comment added to track changes
-
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
