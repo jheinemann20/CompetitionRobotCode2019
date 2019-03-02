@@ -51,10 +51,10 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     // initialize motors
-    fL = new CANSparkMax(2, MotorType.kBrushless); // front left
-    fR = new CANSparkMax(4, MotorType.kBrushless); // front right
-    rL = new CANSparkMax(12, MotorType.kBrushless); // rear left
-    rR = new CANSparkMax(3, MotorType.kBrushless); // rear right
+    fL = new CANSparkMax(3, MotorType.kBrushless); // front left
+    fR = new CANSparkMax(5, MotorType.kBrushless); // front right
+    rL = new CANSparkMax(2, MotorType.kBrushless); // rear left
+    rR = new CANSparkMax(4, MotorType.kBrushless); // rear right
 
     l1 = new VictorSPX(0); // front lifter
     l2 = new VictorSPX(0); // rear lifter
