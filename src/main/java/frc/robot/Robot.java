@@ -140,67 +140,67 @@ public class Robot extends TimedRobot {
     double l1Speed = 0;
     double l2Speed = 0;
 
-    if (myJoy.getRawButton(3)) 
+    if (myJoy.getRawButton(10)) 
       l1Speed += 0.25;
 
-    if (myJoy.getRawButton(4))
+    if (myJoy.getRawButton(10))
       l2Speed += 0.25;
 
-    if (myJoy.getRawButton(2)) {
+    if (myJoy.getRawButton(10)) {
       l1Speed += 0.25;
       l2Speed += 0.25;
     }
 
-    if (myJoy.getRawButton(12)) 
+    if (myJoy.getRawButton(10)) 
       l1Speed -= 0.25;
 
-    if (myJoy.getRawButton(13))
+    if (myJoy.getRawButton(10))
       l2Speed -= 0.25;
 
-    if (myJoy.getRawButton(14)) {
+    if (myJoy.getRawButton(10)) {
       l1Speed -= 0.25;
       l2Speed -= 0.25;
     }
 
-    l1.set(ControlMode.Current, l1Speed);
-    l2.set(ControlMode.Current, l2Speed);
+    l1.set(ControlMode.PercentOutput, l1Speed);
+    l2.set(ControlMode.PercentOutput, l2Speed);
 
     // control herders
-    if (myJoy.getRawButton(5)) {
-      h1.set(ControlMode.Current, 0.5);
-      h2.set(ControlMode.Current, 0.5);
-    } else if (myJoy.getRawButton(6)) {
-      h1.set(ControlMode.Current, -0.5);
-      h2.set(ControlMode.Current, -0.5);
+    if (myJoy.getRawButton(10)) {
+      h1.set(ControlMode.PercentOutput, 0.5);
+      h2.set(ControlMode.PercentOutput, 0.5);
+    } else if (myJoy.getRawButton(10)) {
+      h1.set(ControlMode.PercentOutput, -0.5);
+      h2.set(ControlMode.PercentOutput, -0.5);
     } else {
-      h1.set(ControlMode.Current, 0);
-      h2.set(ControlMode.Current, 0);
+      h1.set(ControlMode.PercentOutput, 0);
+      h2.set(ControlMode.PercentOutput, 0);
     }
 
     // control elevator
-    if (myJoy.getRawButton(7))
-      e.set(ControlMode.Current, 0.1);
-    else if (myJoy.getRawButton(8))
-      e.set(ControlMode.Current, -0.1);
+    if (myJoy.getRawButton(2))
+      e.set(ControlMode.PercentOutput, 0.25);
+    else if (myJoy.getRawButton(3))
+      e.set(ControlMode.PercentOutput, -0.25);
     else
-      e.set(ControlMode.Current, 0);
+      e.set(ControlMode.PercentOutput, 0);
 
     // control ball holder
-    if (myJoy.getRawButton(9))
-      b.set(ControlMode.Current, 0.25);
+    if (myJoy.getRawButton(10))
+      b.set(ControlMode.PercentOutput, 0.25);
     else if (myJoy.getRawButton(10))
-      b.set(ControlMode.Current, -0.25);
+      b.set(ControlMode.PercentOutput, -0.25);
     else
-      b.set(ControlMode.Current, 0);
+      b.set(ControlMode.PercentOutput, 0);
 
-    if (myJoy.getRawButton(11) && !debounce_two) {
+    if (myJoy.getRawButton(10) && !debounce_two) {
       driveToggle = !driveToggle;
       debounce_two = true;
     } else
       debounce_two = false;
 
     if (driveToggle) {
-      lD.set(ControlMode.Current, joyY);
+      lD.set(ControlMode.PercentOutput, joyY);
       if (myJoy.getRawButton(1))
         driveToggle = false;
     } else {
