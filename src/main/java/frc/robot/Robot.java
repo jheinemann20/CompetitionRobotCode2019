@@ -23,11 +23,15 @@ import frc.robot.subsystems.ExampleSubsystem;
  * project.
  */
 public class Robot extends TimedRobot {
-  public static ExampleSubsystem m_subsystem = new ExampleSubsystem();
-  public static OI m_oi;
-
-  Command m_autonomousCommand;
-  SendableChooser<Command> m_chooser = new SendableChooser<>();
+  public CANSparkMax fL, fR, rL, rR;
+  public VictorSPX l1, l2, e, h1, h2, b, lD;
+  public Joystick myJoy, myJoy2;
+  public MecanumDrive myDrive;
+  public DoubleSolenoid shifter;
+  public boolean shiftToggle, debounce, debounce_two;
+  public double joyX, joyY, joyZ;
+  public double deadband;
+  public boolean driveToggle;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -35,10 +39,58 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    m_oi = new OI();
-    m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
-    // chooser.addOption("My Auto", new MyAutoCommand());
-    SmartDashboard.putData("Auto mode", m_chooser);
+    // initialize motors
+    fL = new CANSparkMax(3, MotorType.kBrushless); // front left
+    fR = new CANSparkMax(5, MotorType.kBrushless); // front right
+    rL = new CANSparkMax(2, MotorType.kBrushless); // rear left
+    rR = new CANSparkMax(4, MotorType.kBrushless); // rear right
+
+    l1 = new VictorSPX(0); // front lifter
+    l2 = new VictorSPX(0); // rear lifter
+
+    e = new VictorSPX(10); // elevator nyoom
+
+    h1 = new VictorSPX(0); // left herder
+    h2 = new VictorSPX(0); // right herder
+
+    b = new VictorSPX(0); // ball holder (rotate in and out)
+
+    lD = new VictorSPX(0); // lift drive
+
+    // set motor ramp rate
+    fL.setOpenLoopRampRate(1);
+    fR.setOpenLoopRampRate(1);
+    rL.setOpenLoopRampRate(1);
+    rR.setOpenLoopRampRate(1);
+    fL.setClosedLoopRampRate(1);
+    fR.setClosedLoopRampRate(1);
+    rL.setClosedLoopRampRate(1);
+    rR.setClosedLoopRampRate(1);
+
+    // set deadband
+    deadband = 0.01;
+
+    // invert motors
+    fL.setInverted(false);
+    fR.setInverted(false);
+    rL.setInverted(false);
+    rR.setInverted(false);
+
+    // initialize joysticks
+    myJoy = new Joystick(0);
+    myJoy2 = new Joystick(1);
+
+    // initialize drivetrain
+    myDrive = new MecanumDrive(fL, fR, rL, rR);
+
+    // initialize DoubleSolenoid (and assosciated booleans)
+    shifter = new DoubleSolenoid(0, 1);
+    shiftToggle = true;
+    debounce = false;
+
+    // set driveToggle to default (mecanum/arcade)
+    driveToggle = false;
+    debounce_two = false;
   }
 
   /**
@@ -59,58 +111,108 @@ public class Robot extends TimedRobot {
    * the robot is disabled.
    */
   @Override
-  public void disabledInit() {
-  }
-
-  @Override
-  public void disabledPeriodic() {
-    Scheduler.getInstance().run();
-  }
-
-  /**
-   * This autonomous (along with the chooser code above) shows how to select
-   * between different autonomous modes using the dashboard. The sendable
-   * chooser code works with the Java SmartDashboard. If you prefer the
-   * LabVIEW Dashboard, remove all of the chooser code and uncomment the
-   * getString code to get the auto name from the text box below the Gyro
-   *
-   * <p>You can add additional auto modes by adding additional commands to the
-   * chooser code above (like the commented example) or additional comparisons
-   * to the switch structure below with additional strings & commands.
-   */
-  @Override
-  public void autonomousInit() {
-    m_autonomousCommand = m_chooser.getSelected();
-
-    /*
-     * String autoSelected = SmartDashboard.getString("Auto Selector",
-     * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-     * = new MyAutoCommand(); break; case "Default Auto": default:
-     * autonomousCommand = new ExampleCommand(); break; }
+  public void teleopPeriodic() {
+    /**
+     * Logitech Controller ("Joystick") axis map:
+     * 0 - Left stick X
+     * 1 - Left stick Y
+     * 2 - Left analog trigger
+     * 3 - Right analog trigger
+     * 4 - Right stick X
+     * 5 - Right stick Y
      */
 
-    // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.start();
+    // set up joystic axis values and adds deadband
+    joyX = addDeadband(myJoy.getRawAxis(1));
+    joyY = addDeadband(myJoy.getRawAxis(0));
+    joyZ = addDeadband(myJoy.getRawAxis(4));
+
+    // control lifter motors
+    double l1Speed = 0;
+    double l2Speed = 0;
+
+    if (myJoy.getRawButton(10)) // front lifter up
+      l1Speed += 0.25;
+
+    if (myJoy.getRawButton(10)) // rear lifter up
+      l2Speed += 0.25;
+
+    if (myJoy.getRawButton(10)) { // both lifters up
+      l1Speed += 0.25;
+      l2Speed += 0.25;
+    }
+
+    if (myJoy.getRawButton(10)) // front lifter down
+      l1Speed -= 0.25;
+
+    if (myJoy.getRawButton(10)) // rear lifter down
+      l2Speed -= 0.25;
+
+    if (myJoy.getRawButton(10)) { // both lifters down
+      l1Speed -= 0.25;
+      l2Speed -= 0.25;
+    }
+
+    l1.set(ControlMode.PercentOutput, l1Speed);
+    l2.set(ControlMode.PercentOutput, l2Speed);
+
+    // control herders
+    if (myJoy.getRawButton(10)) { // herders out
+      h1.set(ControlMode.PercentOutput, 0.5);
+      h2.set(ControlMode.PercentOutput, 0.5);
+    } else if (myJoy.getRawButton(10)) { // herders in
+      h1.set(ControlMode.PercentOutput, -0.5);
+      h2.set(ControlMode.PercentOutput, -0.5);
+    } else {
+      h1.set(ControlMode.PercentOutput, 0);
+      h2.set(ControlMode.PercentOutput, 0);
     }
   }
 
-  /**
-   * This function is called periodically during autonomous.
-   */
-  @Override
-  public void autonomousPeriodic() {
-    Scheduler.getInstance().run();
-  }
+    // control elevator
+    if (myJoy.getRawButton(2)) // elevator up
+      e.set(ControlMode.PercentOutput, 0.25);
+    else if (myJoy.getRawButton(3)) // elevator down
+      e.set(ControlMode.PercentOutput, -0.25);
+    else
+      e.set(ControlMode.PercentOutput, 0);
 
-  @Override
-  public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
+    // control ball holder
+    if (myJoy.getRawButton(10)) // holder out
+      b.set(ControlMode.PercentOutput, 0.25);
+    else if (myJoy.getRawButton(10)) // holder in
+      b.set(ControlMode.PercentOutput, -0.25);
+    else
+      b.set(ControlMode.PercentOutput, 0);
+
+    // control drive toggle
+    if (myJoy.getRawButton(10) && !debounce_two) { // drive toggle
+      driveToggle = !driveToggle;
+      debounce_two = true;
+    } else
+      debounce_two = false;
+
+    // control robotDrive
+    if (driveToggle) {
+      lD.set(ControlMode.PercentOutput, joyY);
+      if (myJoy.getRawButton(1)) // disable driveToggle on press (and shifts)
+        driveToggle = false;
+    } else {
+      // toggles shifter
+      if (myJoy.getRawButton(1)) {  // shifter (toggle)
+        if (!debounce)
+          shiftToggle = !shiftToggle;
+        debounce = true;
+      } else
+        debounce = false;
+      
+      if (shiftToggle) {
+        shifter.set(Value.kForward);
+        myDrive.driveCartesian(-joyX, 0, joyZ); // arcade (mecanum without the Y)
+      } else {
+        shifter.set(Value.kReverse);
+        myDrive.driveCartesian(-joyX, joyY, joyZ); // mecanum (with the Y)
+      }
     }
   }
 
