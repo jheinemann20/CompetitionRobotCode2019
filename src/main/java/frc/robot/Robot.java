@@ -10,7 +10,9 @@ package frc.robot;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -38,6 +40,8 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // initialize motors
     m1 = new CANSparkMax(13, MotorType.kBrushless);
+
+    SmartDashboard.putNumber("Motor One" , 0);
   }
 
   /**
@@ -59,13 +63,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     /**
-     * Logitech Controller ("Joystick") axis map:
-     * 0 - Left stick X
-     * 1 - Left stick Y
-     * 2 - Left analog trigger
-     * 3 - Right analog trigger
-     * 4 - Right stick X
-     * 5 - Right stick Y
+     * Logitech Controller ("Joystick") axis map: 0 - Left stick X 1 - Left stick Y
+     * 2 - Left analog trigger 3 - Right analog trigger 4 - Right stick X 5 - Right
+     * stick Y
      */
     m1.set(0.25);
   }
@@ -75,5 +75,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+    m1.set(SmartDashboard.getNumber("Motor One", 0));
   }
 }
