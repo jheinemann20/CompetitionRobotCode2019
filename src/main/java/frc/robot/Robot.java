@@ -7,16 +7,11 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.drive.MecanumDrive;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -35,14 +30,6 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
  */
 public class Robot extends TimedRobot {
   public CANSparkMax fL, fR, rL, rR;
-  public VictorSPX l1, l2, e, h1, h2, b, lD;
-  public Joystick myJoy, myJoy2;
-  public MecanumDrive myDrive;
-  public DoubleSolenoid shifter;
-  public boolean shiftToggle, debounce, debounce_two;
-  public double joyX, joyY, joyZ;
-  public double deadband;
-  public boolean driveToggle;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -55,16 +42,6 @@ public class Robot extends TimedRobot {
     fR = new CANSparkMax(5, MotorType.kBrushless); // front right
     rL = new CANSparkMax(2, MotorType.kBrushless); // rear left
     rR = new CANSparkMax(4, MotorType.kBrushless); // rear right
-
-    // set motor ramp rate
-    fL.setOpenLoopRampRate(1);
-    fR.setOpenLoopRampRate(1);
-    rL.setOpenLoopRampRate(1);
-    rR.setOpenLoopRampRate(1);
-    fL.setClosedLoopRampRate(1);
-    fR.setClosedLoopRampRate(1);
-    rL.setClosedLoopRampRate(1);
-    rR.setClosedLoopRampRate(1);
   }
 
   /**
@@ -102,18 +79,6 @@ public class Robot extends TimedRobot {
     fR.set(0.25);
     rL.set(0.25);
     rR.set(0.25);
-  }
-
-  /**
-   * This method adds a deadband to any Joystick axis (set deadband in robotInit)
-   */
-  public double addDeadband(double x) {
-    if (x >= deadband)
-      return x;
-    else if (x <= -deadband)
-      return x;
-    else
-      return 0;
   }
 
   /**
