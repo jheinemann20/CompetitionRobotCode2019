@@ -56,18 +56,6 @@ public class Robot extends TimedRobot {
     rL = new CANSparkMax(2, MotorType.kBrushless); // rear left
     rR = new CANSparkMax(4, MotorType.kBrushless); // rear right
 
-    l1 = new VictorSPX(0); // front lifter
-    l2 = new VictorSPX(0); // rear lifter
-
-    e = new VictorSPX(10); // elevator nyoom
-
-    h1 = new VictorSPX(0); // left herder
-    h2 = new VictorSPX(0); // right herder
-
-    b = new VictorSPX(0); // ball holder (rotate in and out)
-
-    lD = new VictorSPX(0); // lift drive
-
     // set motor ramp rate
     fL.setOpenLoopRampRate(1);
     fR.setOpenLoopRampRate(1);
@@ -77,31 +65,6 @@ public class Robot extends TimedRobot {
     fR.setClosedLoopRampRate(1);
     rL.setClosedLoopRampRate(1);
     rR.setClosedLoopRampRate(1);
-
-    // set deadband
-    deadband = 0.01;
-
-    // invert motors
-    fL.setInverted(false);
-    fR.setInverted(false);
-    rL.setInverted(false);
-    rR.setInverted(false);
-
-    // initialize joysticks
-    myJoy = new Joystick(0);
-    myJoy2 = new Joystick(1);
-
-    // initialize drivetrain
-    myDrive = new MecanumDrive(fL, fR, rL, rR);
-
-    // initialize DoubleSolenoid (and assosciated booleans)
-    shifter = new DoubleSolenoid(0, 1);
-    shiftToggle = true;
-    debounce = false;
-
-    // set driveToggle to default (mecanum/arcade)
-    driveToggle = false;
-    debounce_two = false;
   }
 
   /**
