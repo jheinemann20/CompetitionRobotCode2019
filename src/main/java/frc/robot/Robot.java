@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -24,10 +25,10 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
  * documentation. If you change the name of this class or the package after
  * creating this project, you must also update the build.gradle file in the
  * project.
- * 
+ *
  * This is a basic project to implement a Mecanum Drive Train using the Spark
  * MAX motor controllers (with brushless motors).
- * 
+ *
  * UPDATE 1: Added shifter code UPDATE 2: Linked Mecanum and arcade (although
  * this time it's just modified mecanum) to the shifter code. UPDATE 3: Added
  * configurable deadband and fixed ramprate. UPDATE 4: Added lifter, elevator,
@@ -102,6 +103,11 @@ public class Robot extends TimedRobot {
     // set driveToggle to default (mecanum/arcade)
     driveToggle = false;
     debounce_two = false;
+
+    SmartDashboard.putNumber("Front Left", fL.get());
+    SmartDashboard.putNumber("Front Right", fR.get());
+    SmartDashboard.putNumber("Rear Left", rL.get());
+    SmartDashboard.putNumber("Rear Right", rR.get());
   }
 
   /**
@@ -214,7 +220,7 @@ public class Robot extends TimedRobot {
         debounce = true;
       } else
         debounce = false;
-      
+
       if (shiftToggle) {
         shifter.set(Value.kForward);
         myDrive.driveCartesian(-joyX, 0, joyZ); // arcade (mecanum without the Y)
@@ -243,5 +249,9 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
     shifter.set(Value.kForward);
+    fL.set(SmartDashboard.getNumber("Front Left", 0));
+    fR.set(SmartDashboard.getNumber("Front Right", 0));
+    rL.set(SmartDashboard.getNumber("Rear Left", 0));
+    rR.set(SmartDashboard.getNumber("Rear Right", 0));
   }
 }
