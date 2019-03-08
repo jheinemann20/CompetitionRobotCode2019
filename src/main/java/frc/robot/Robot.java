@@ -86,6 +86,5 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
-    shifter.set(Value.kForward);
   }
 }
