@@ -10,7 +10,6 @@ package frc.robot;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 /**
@@ -29,7 +28,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
  * and herder motors.
  */
 public class Robot extends TimedRobot {
-  public CANSparkMax fL, fR, rL, rR;
+  public CANSparkMax m1;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -38,10 +37,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     // initialize motors
-    fL = new CANSparkMax(3, MotorType.kBrushless); // front left
-    fR = new CANSparkMax(5, MotorType.kBrushless); // front right
-    rL = new CANSparkMax(2, MotorType.kBrushless); // rear left
-    rR = new CANSparkMax(4, MotorType.kBrushless); // rear right
+    m1 = new CANSparkMax(13, MotorType.kBrushless);
   }
 
   /**
@@ -71,14 +67,7 @@ public class Robot extends TimedRobot {
      * 4 - Right stick X
      * 5 - Right stick Y
      */
-    fL.set(0.25);
-    fR.set(0.25);
-    rL.set(0.25);
-    rR.set(0.25);
-    fL.set(0.25);
-    fR.set(0.25);
-    rL.set(0.25);
-    rR.set(0.25);
+    m1.set(0.25);
   }
 
   /**
