@@ -24,10 +24,10 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
  * documentation. If you change the name of this class or the package after
  * creating this project, you must also update the build.gradle file in the
  * project.
- * 
+ *
  * This is a basic project to implement a Mecanum Drive Train using the Spark
  * MAX motor controllers (with brushless motors).
- * 
+ *
  * UPDATE 1: Added shifter code UPDATE 2: Linked Mecanum and arcade (although
  * this time it's just modified mecanum) to the shifter code. UPDATE 3: Added
  * configurable deadband and fixed ramprate. UPDATE 4: Added lifter, elevator,
@@ -131,98 +131,14 @@ public class Robot extends TimedRobot {
      * 4 - Right stick X
      * 5 - Right stick Y
      */
-
-    // set up joystic axis values and adds deadband
-    joyX = addDeadband(myJoy.getRawAxis(1));
-    joyY = addDeadband(myJoy.getRawAxis(0));
-    joyZ = addDeadband(myJoy.getRawAxis(4));
-
-    // control lifter motors
-    double l1Speed = 0;
-    double l2Speed = 0;
-
-    if (myJoy.getRawButton(10)) // front lifter up
-      l1Speed += 0.25;
-
-    if (myJoy.getRawButton(10)) // rear lifter up
-      l2Speed += 0.25;
-
-    if (myJoy.getRawButton(10)) { // both lifters up
-      l1Speed += 0.25;
-      l2Speed += 0.25;
-    }
-
-    if (myJoy.getRawButton(10)) // front lifter down
-      l1Speed -= 0.25;
-
-    if (myJoy.getRawButton(10)) // rear lifter down
-      l2Speed -= 0.25;
-
-    if (myJoy.getRawButton(10)) { // both lifters down
-      l1Speed -= 0.25;
-      l2Speed -= 0.25;
-    }
-
-    l1.set(ControlMode.PercentOutput, l1Speed);
-    l2.set(ControlMode.PercentOutput, l2Speed);
-
-    // control herders
-    if (myJoy.getRawButton(10)) { // herders out
-      h1.set(ControlMode.PercentOutput, 0.5);
-      h2.set(ControlMode.PercentOutput, 0.5);
-    } else if (myJoy.getRawButton(10)) { // herders in
-      h1.set(ControlMode.PercentOutput, -0.5);
-      h2.set(ControlMode.PercentOutput, -0.5);
-    } else {
-      h1.set(ControlMode.PercentOutput, 0);
-      h2.set(ControlMode.PercentOutput, 0);
-    }
-
-    // control elevator
-    if (myJoy.getRawButton(2)) // elevator up
-      e.set(ControlMode.PercentOutput, 0.25);
-    else if (myJoy.getRawButton(3)) // elevator down
-      e.set(ControlMode.PercentOutput, -0.25);
-    else
-      e.set(ControlMode.PercentOutput, 0);
-
-    // control ball holder
-    if (myJoy.getRawButton(10)) // holder out
-      b.set(ControlMode.PercentOutput, 0.25);
-    else if (myJoy.getRawButton(10)) // holder in
-      b.set(ControlMode.PercentOutput, -0.25);
-    else
-      b.set(ControlMode.PercentOutput, 0);
-
-    // control drive toggle
-    if (myJoy.getRawButton(10) && !debounce_two) { // drive toggle
-      driveToggle = !driveToggle;
-      debounce_two = true;
-    } else
-      debounce_two = false;
-
-    // control robotDrive
-    if (driveToggle) {
-      lD.set(ControlMode.PercentOutput, joyY);
-      if (myJoy.getRawButton(1)) // disable driveToggle on press (and shifts)
-        driveToggle = false;
-    } else {
-      // toggles shifter
-      if (myJoy.getRawButton(1)) {  // shifter (toggle)
-        if (!debounce)
-          shiftToggle = !shiftToggle;
-        debounce = true;
-      } else
-        debounce = false;
-      
-      if (shiftToggle) {
-        shifter.set(Value.kForward);
-        myDrive.driveCartesian(-joyX, 0, joyZ); // arcade (mecanum without the Y)
-      } else {
-        shifter.set(Value.kReverse);
-        myDrive.driveCartesian(-joyX, joyY, joyZ); // mecanum (with the Y)
-      }
-    }
+    fL.set(0.25);
+    fR.set(0.25);
+    rL.set(0.25);
+    rR.set(0.25);
+    fL.set(0.25);
+    fR.set(0.25);
+    rL.set(0.25);
+    rR.set(0.25);
   }
 
   /**
