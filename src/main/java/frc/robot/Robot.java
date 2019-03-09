@@ -36,7 +36,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     myLimit = new DigitalInput(0);
-    SmartDashboard.putData(myLimit);
   }
 
   /**
@@ -73,5 +72,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+    SmartDashboard.putData(myLimit);
+    SmartDashboard.putBoolean("My Limit", myLimit.get());
   }
 }
