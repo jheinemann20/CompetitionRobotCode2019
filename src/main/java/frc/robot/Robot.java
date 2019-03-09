@@ -70,10 +70,10 @@ public class Robot extends TimedRobot {
     lD = new VictorSPX(0); // lift drive
 
     // set motor ramp rate
-    fL.setOpenLoopRampRate(1);
-    fR.setOpenLoopRampRate(1);
-    rL.setOpenLoopRampRate(1);
-    rR.setOpenLoopRampRate(1);
+    fL.setOpenLoopRampRate(0.5);
+    fR.setOpenLoopRampRate(0.5);
+    rL.setOpenLoopRampRate(0.5);
+    rR.setOpenLoopRampRate(0.5);
     fL.setClosedLoopRampRate(1);
     fR.setClosedLoopRampRate(1);
     rL.setClosedLoopRampRate(1);
