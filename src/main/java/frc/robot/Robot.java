@@ -80,7 +80,7 @@ public class Robot extends TimedRobot {
     rR.setClosedLoopRampRate(1);
 
     // set deadband
-    deadband = 0.01;
+    deadband = 0.05;
 
     // invert motors
     fL.setInverted(false);
