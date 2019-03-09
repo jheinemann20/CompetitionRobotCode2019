@@ -57,17 +57,17 @@ public class Robot extends TimedRobot {
     rL = new CANSparkMax(2, MotorType.kBrushless); // rear left
     rR = new CANSparkMax(4, MotorType.kBrushless); // rear right
 
-    l1 = new VictorSPX(0); // front lifter
-    l2 = new VictorSPX(0); // rear lifter
+    l1 = new VictorSPX(10); // front lifter
+    l2 = new VictorSPX(9); // rear lifter
 
-    e = new VictorSPX(10); // elevator nyoom
+    e = new VictorSPX(11); // elevator nyoom
 
     h1 = new VictorSPX(0); // left herder
     h2 = new VictorSPX(0); // right herder
 
     b = new VictorSPX(0); // ball holder (rotate in and out)
 
-    lD = new VictorSPX(0); // lift drive
+    lD = new VictorSPX(12); // lift drive
 
     // set motor ramp rate
     fL.setOpenLoopRampRate(0.5);
@@ -147,21 +147,21 @@ public class Robot extends TimedRobot {
     double l1Speed = 0;
     double l2Speed = 0;
 
-    if (myJoy.getRawButton(10)) // front lifter up
+    if (myJoy.getRawButton(5)) // front lifter up
       l1Speed += 0.25;
 
-    if (myJoy.getRawButton(10)) // rear lifter up
+    if (myJoy.getRawButton(6)) // rear lifter up
       l2Speed += 0.25;
 
-    if (myJoy.getRawButton(10)) { // both lifters up
+    if (myJoy.getRawButton(7)) { // both lifters up
       l1Speed += 0.25;
       l2Speed += 0.25;
     }
 
-    if (myJoy.getRawButton(10)) // front lifter down
+    if (myJoy.getRawButton(8)) // front lifter down
       l1Speed -= 0.25;
 
-    if (myJoy.getRawButton(10)) // rear lifter down
+    if (myJoy.getRawButton(9)) // rear lifter down
       l2Speed -= 0.25;
 
     if (myJoy.getRawButton(10)) { // both lifters down
@@ -173,10 +173,10 @@ public class Robot extends TimedRobot {
     l2.set(ControlMode.PercentOutput, l2Speed);
 
     // control herders
-    if (myJoy.getRawButton(10)) { // herders out
+    if (myJoy.getRawButton(11)) { // herders out
       h1.set(ControlMode.PercentOutput, 0.5);
       h2.set(ControlMode.PercentOutput, 0.5);
-    } else if (myJoy.getRawButton(10)) { // herders in
+    } else if (myJoy.getRawButton(1)) { // herders in
       h1.set(ControlMode.PercentOutput, -0.5);
       h2.set(ControlMode.PercentOutput, -0.5);
     } else {
@@ -193,15 +193,15 @@ public class Robot extends TimedRobot {
       e.set(ControlMode.PercentOutput, 0);
 
     // control ball holder
-    if (myJoy.getRawButton(10)) // holder out
+    if (myJoy.getRawButton(11)) // holder out
       b.set(ControlMode.PercentOutput, 0.25);
-    else if (myJoy.getRawButton(10)) // holder in
+    else if (myJoy.getRawButton(11)) // holder in
       b.set(ControlMode.PercentOutput, -0.25);
     else
       b.set(ControlMode.PercentOutput, 0);
 
     // control drive toggle
-    if (myJoy.getRawButton(10) && !debounce_two) { // drive toggle
+    if (myJoy.getRawButton(4) && !debounce_two) { // drive toggle
       driveToggle = !driveToggle;
       debounce_two = true;
     } else
