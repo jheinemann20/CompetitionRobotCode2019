@@ -10,12 +10,14 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -23,6 +25,14 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
  * documentation. If you change the name of this class or the package after
  * creating this project, you must also update the build.gradle file in the
  * project.
+ *
+ * This is a basic project to implement a Mecanum Drive Train using the Spark
+ * MAX motor controllers (with brushless motors).
+ *
+ * UPDATE 1: Added shifter code UPDATE 2: Linked Mecanum and arcade (although
+ * this time it's just modified mecanum) to the shifter code. UPDATE 3: Added
+ * configurable deadband and fixed ramprate. UPDATE 4: Added lifter, elevator,
+ * and herder motors.
  */
 public class Robot extends TimedRobot {
   public CANSparkMax fL, fR, rL, rR;
@@ -36,8 +46,8 @@ public class Robot extends TimedRobot {
   public boolean driveToggle;
 
   /**
-   * This function is run when the robot is first started up and should be
-   * used for any initialization code.
+   * This function is run when the robot is first started up and should be used
+   * for any initialization code.
    */
   @Override
   public void robotInit() {
@@ -60,10 +70,10 @@ public class Robot extends TimedRobot {
     lD = new VictorSPX(0); // lift drive
 
     // set motor ramp rate
-    fL.setOpenLoopRampRate(1);
-    fR.setOpenLoopRampRate(1);
-    rL.setOpenLoopRampRate(1);
-    rR.setOpenLoopRampRate(1);
+    fL.setOpenLoopRampRate(0.5);
+    fR.setOpenLoopRampRate(0.5);
+    rL.setOpenLoopRampRate(0.5);
+    rR.setOpenLoopRampRate(0.5);
     fL.setClosedLoopRampRate(1);
     fR.setClosedLoopRampRate(1);
     rL.setClosedLoopRampRate(1);
@@ -93,24 +103,28 @@ public class Robot extends TimedRobot {
     // set driveToggle to default (mecanum/arcade)
     driveToggle = false;
     debounce_two = false;
+
+    SmartDashboard.putNumber("Front Left", fL.get());
+    SmartDashboard.putNumber("Front Right", fR.get());
+    SmartDashboard.putNumber("Rear Left", rL.get());
+    SmartDashboard.putNumber("Rear Right", rR.get());
   }
 
   /**
-   * This function is called every robot packet, no matter the mode. Use
-   * this for items like diagnostics that you want ran during disabled,
-   * autonomous, teleoperated and test.
+   * This function is called every robot packet, no matter the mode. Use this for
+   * items like diagnostics that you want ran during disabled, autonomous,
+   * teleoperated and test.
    *
-   * <p>This runs after the mode specific periodic functions, but before
-   * LiveWindow and SmartDashboard integrated updating.
+   * <p>
+   * This runs after the mode specific periodic functions, but before LiveWindow
+   * and SmartDashboard integrated updating.
    */
   @Override
   public void robotPeriodic() {
   }
 
   /**
-   * This function is called once each time the robot enters Disabled mode.
-   * You can use it to reset any subsystem information you want to clear when
-   * the robot is disabled.
+   * This function is called periodically during operator control.
    */
   @Override
   public void teleopPeriodic() {
@@ -169,7 +183,6 @@ public class Robot extends TimedRobot {
       h1.set(ControlMode.PercentOutput, 0);
       h2.set(ControlMode.PercentOutput, 0);
     }
-  }
 
     // control elevator
     if (myJoy.getRawButton(2)) // elevator up
@@ -219,11 +232,15 @@ public class Robot extends TimedRobot {
   }
 
   /**
-   * This function is called periodically during operator control.
+   * This method adds a deadband to any Joystick axis (set deadband in robotInit)
    */
-  @Override
-  public void teleopPeriodic() {
-    Scheduler.getInstance().run();
+  public double addDeadband(double x) {
+    if (x >= deadband)
+      return x;
+    else if (x <= -deadband)
+      return x;
+    else
+      return 0;
   }
 
   /**
@@ -231,5 +248,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+    shifter.set(Value.kForward);
+    fL.set(SmartDashboard.getNumber("Front Left", 0));
+    fR.set(SmartDashboard.getNumber("Front Right", 0));
+    rL.set(SmartDashboard.getNumber("Rear Left", 0));
+    rR.set(SmartDashboard.getNumber("Rear Right", 0));
   }
 }
