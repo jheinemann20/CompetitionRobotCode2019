@@ -7,16 +7,8 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -35,15 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * and herder motors.
  */
 public class Robot extends TimedRobot {
-  public CANSparkMax fL, fR, rL, rR;
-  public VictorSPX l1, l2, e, h1, h2, b, lD;
-  public Joystick myJoy, myJoy2;
-  public MecanumDrive myDrive;
-  public DoubleSolenoid shifter;
-  public boolean shiftToggle, debounce, debounce_two;
-  public double joyX, joyY, joyZ;
-  public double deadband;
-  public boolean driveToggle;
+  public DigitalInput myLimit;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -51,63 +35,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    // initialize motors
-    fL = new CANSparkMax(3, MotorType.kBrushless); // front left
-    fR = new CANSparkMax(5, MotorType.kBrushless); // front right
-    rL = new CANSparkMax(2, MotorType.kBrushless); // rear left
-    rR = new CANSparkMax(4, MotorType.kBrushless); // rear right
-
-    l1 = new VictorSPX(0); // front lifter
-    l2 = new VictorSPX(0); // rear lifter
-
-    e = new VictorSPX(10); // elevator nyoom
-
-    h1 = new VictorSPX(0); // left herder
-    h2 = new VictorSPX(0); // right herder
-
-    b = new VictorSPX(0); // ball holder (rotate in and out)
-
-    lD = new VictorSPX(0); // lift drive
-
-    // set motor ramp rate
-    fL.setOpenLoopRampRate(0.5);
-    fR.setOpenLoopRampRate(0.5);
-    rL.setOpenLoopRampRate(0.5);
-    rR.setOpenLoopRampRate(0.5);
-    fL.setClosedLoopRampRate(1);
-    fR.setClosedLoopRampRate(1);
-    rL.setClosedLoopRampRate(1);
-    rR.setClosedLoopRampRate(1);
-
-    // set deadband
-    deadband = 0.05;
-
-    // invert motors
-    fL.setInverted(false);
-    fR.setInverted(false);
-    rL.setInverted(false);
-    rR.setInverted(false);
-
-    // initialize joysticks
-    myJoy = new Joystick(0);
-    myJoy2 = new Joystick(1);
-
-    // initialize drivetrain
-    myDrive = new MecanumDrive(fL, fR, rL, rR);
-
-    // initialize DoubleSolenoid (and assosciated booleans)
-    shifter = new DoubleSolenoid(0, 1);
-    shiftToggle = true;
-    debounce = false;
-
-    // set driveToggle to default (mecanum/arcade)
-    driveToggle = false;
-    debounce_two = false;
-
-    SmartDashboard.putNumber("Front Left", fL.get());
-    SmartDashboard.putNumber("Front Right", fR.get());
-    SmartDashboard.putNumber("Rear Left", rL.get());
-    SmartDashboard.putNumber("Rear Right", rR.get());
+    myLimit = new DigitalInput(0);
+    SmartDashboard.putData(myLimit);
   }
 
   /**
@@ -137,110 +66,6 @@ public class Robot extends TimedRobot {
      * 4 - Right stick X
      * 5 - Right stick Y
      */
-
-    // set up joystic axis values and adds deadband
-    joyX = addDeadband(myJoy.getRawAxis(1));
-    joyY = addDeadband(myJoy.getRawAxis(0));
-    joyZ = addDeadband(myJoy.getRawAxis(4));
-
-    // control lifter motors
-    double l1Speed = 0;
-    double l2Speed = 0;
-
-    if (myJoy.getRawButton(10)) // front lifter up
-      l1Speed += 0.25;
-
-    if (myJoy.getRawButton(10)) // rear lifter up
-      l2Speed += 0.25;
-
-    if (myJoy.getRawButton(10)) { // both lifters up
-      l1Speed += 0.25;
-      l2Speed += 0.25;
-    }
-
-    if (myJoy.getRawButton(10)) // front lifter down
-      l1Speed -= 0.25;
-
-    if (myJoy.getRawButton(10)) // rear lifter down
-      l2Speed -= 0.25;
-
-    if (myJoy.getRawButton(10)) { // both lifters down
-      l1Speed -= 0.25;
-      l2Speed -= 0.25;
-    }
-
-    l1.set(ControlMode.PercentOutput, l1Speed);
-    l2.set(ControlMode.PercentOutput, l2Speed);
-
-    // control herders
-    if (myJoy.getRawButton(10)) { // herders out
-      h1.set(ControlMode.PercentOutput, 0.5);
-      h2.set(ControlMode.PercentOutput, 0.5);
-    } else if (myJoy.getRawButton(10)) { // herders in
-      h1.set(ControlMode.PercentOutput, -0.5);
-      h2.set(ControlMode.PercentOutput, -0.5);
-    } else {
-      h1.set(ControlMode.PercentOutput, 0);
-      h2.set(ControlMode.PercentOutput, 0);
-    }
-
-    // control elevator
-    if (myJoy.getRawButton(2)) // elevator up
-      e.set(ControlMode.PercentOutput, 0.25);
-    else if (myJoy.getRawButton(3)) // elevator down
-      e.set(ControlMode.PercentOutput, -0.25);
-    else
-      e.set(ControlMode.PercentOutput, 0);
-
-    // control ball holder
-    if (myJoy.getRawButton(10)) // holder out
-      b.set(ControlMode.PercentOutput, 0.25);
-    else if (myJoy.getRawButton(10)) // holder in
-      b.set(ControlMode.PercentOutput, -0.25);
-    else
-      b.set(ControlMode.PercentOutput, 0);
-
-    // control drive toggle
-    if (myJoy.getRawButton(10) && !debounce_two) { // drive toggle
-      driveToggle = !driveToggle;
-      debounce_two = true;
-    } else
-      debounce_two = false;
-
-    // control robotDrive
-    if (driveToggle) {
-      lD.set(ControlMode.PercentOutput, joyY);
-      if (myJoy.getRawButton(1)) // disable driveToggle on press (and shifts)
-        driveToggle = false;
-    } else {
-      // toggles shifter
-      if (myJoy.getRawButton(1)) {  // shifter (toggle)
-        if (!debounce)
-          shiftToggle = !shiftToggle;
-        debounce = true;
-      } else
-        debounce = false;
-
-      if (shiftToggle) {
-        shifter.set(Value.kForward);
-        myDrive.driveCartesian(-joyX, 0, joyZ); // arcade (mecanum without the Y)
-      } else {
-        shifter.set(Value.kReverse);
-        myDrive.driveCartesian(-joyX, joyY, joyZ); // mecanum (with the Y)
-      }
-    }
-  }
-
-  /**
-   * This method adds a deadband to any Joystick axis (set deadband in robotInit)
-   */
-  public double addDeadband(double x) {
-    if (x >= deadband)
-      return x;
-    else if (x <= -deadband)
-      return x;
-    else
-      return 0;
   }
 
   /**
@@ -248,10 +73,5 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
-    shifter.set(Value.kForward);
-    fL.set(SmartDashboard.getNumber("Front Left", 0));
-    fR.set(SmartDashboard.getNumber("Front Right", 0));
-    rL.set(SmartDashboard.getNumber("Rear Left", 0));
-    rR.set(SmartDashboard.getNumber("Rear Right", 0));
   }
 }
