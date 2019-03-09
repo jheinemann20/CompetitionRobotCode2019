@@ -7,13 +7,15 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.revrobotics.CANSparkMax;
+
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ExampleSubsystem;
+import edu.wpi.first.wpilibj.drive.MecanumDrive;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -205,7 +207,7 @@ public class Robot extends TimedRobot {
         debounce = true;
       } else
         debounce = false;
-      
+
       if (shiftToggle) {
         shifter.set(Value.kForward);
         myDrive.driveCartesian(-joyX, 0, joyZ); // arcade (mecanum without the Y)
