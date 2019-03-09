@@ -9,7 +9,6 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -28,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends TimedRobot {
   public DigitalInput myLimit;
+  public DigitalInput myLimitTwo;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -36,6 +36,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     myLimit = new DigitalInput(0);
+    myLimitTwo = new DigitalInput(1);
   }
 
   /**
@@ -72,7 +73,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
-    SmartDashboard.putData(myLimit);
-    SmartDashboard.putBoolean("My Limit", myLimit.get());
+    // SmartDashboard.putData(myLimit);
+    // SmartDashboard.putBoolean("My Limit", myLimit.get());
+    // SmartDashboard.putData(myLimitTwo);
+    // SmartDashboard.putBoolean("My Limit", myLimitTwo.get());
   }
 }
